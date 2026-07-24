@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Devis en ligne — SystèmeDrone · Nettoyage de toiture par drone</title>
+  <meta name="description" content="Estimez en quelques secondes le prix du nettoyage de votre toiture et de vos murs par drone." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3l9 7-1.5 1.2V21H4.5v-9.8L3 10z"/><path d="M9 21v-6h6v6"/>
+        </svg>
+      </div>
+      <div class="brand">
+        <h1>SystèmeDrone</h1>
+        <p>Nettoyage de toiture &amp; murs par drone — devis instantané</p>
+      </div>
+    </header>
+
+    <form id="devis">
+      <div class="grid">
+        <!-- Colonne configuration -->
+        <div>
+          <div class="card">
+            <h2>1 · Votre prestation</h2>
+
+            <div class="field">
+              <span class="label">État de la toiture <span class="hint">— détermine le traitement</span></span>
+              <div class="seg" id="type" role="group" aria-label="Type de prestation">
+                <button type="button" data-val="preventif" aria-pressed="true">Sale<small>Préventif</small></button>
+                <button type="button" data-val="curatif" aria-pressed="false">Très sale<small>Curatif</small></button>
+              </div>
+            </div>
+
+            <div class="field">
+              <span class="label">Configuration du bâtiment</span>
+              <div class="seg" id="etage" role="group" aria-label="Étage">
+                <button type="button" data-val="sans" aria-pressed="true">Sans étage<small>Plain-pied</small></button>
+                <button type="button" data-val="avec" aria-pressed="false">Avec étage<small>R+1 et plus</small></button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="typeToit">Type de toiture</label>
+              <select id="typeToit">
+                <option value="ardoise">Ardoise</option>
+                <option value="tuile">Tuile</option>
+                <option value="autre">Autre</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>2 · Surfaces à traiter</h2>
+            <div class="row">
+              <div class="field">
+                <label class="label" for="surfaceToit">Surface toiture</label>
+                <div class="suffix">
+                  <input id="surfaceToit" type="number" min="0" step="1" inputmode="numeric" placeholder="0" />
+                  <span>m²</span>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label" for="surfaceMur">Surface murs <span class="hint">(optionnel)</span></label>
+                <div class="suffix">
+                  <input id="surfaceMur" type="number" min="0" step="1" inputmode="numeric" placeholder="0" />
+                  <span>m²</span>
+                </div>
+              </div>
+            </div>
+            <p class="note">Laissez un champ à 0 pour ne traiter que la toiture ou que les murs.</p>
+          </div>
+
+          <div class="card">
+            <h2>3 · Vos coordonnées</h2>
+            <div class="row">
+              <div class="field"><label class="label" for="prenom">Prénom</label><input id="prenom" type="text" autocomplete="given-name" /></div>
+              <div class="field"><label class="label" for="nom">Nom</label><input id="nom" type="text" autocomplete="family-name" /></div>
+            </div>
+            <div class="field"><label class="label" for="adresse">Adresse</label><input id="adresse" type="text" autocomplete="street-address" placeholder="N°, rue, code postal, ville" /></div>
+            <div class="row">
+              <div class="field"><label class="label" for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="vous@exemple.fr" /></div>
+              <div class="field"><label class="label" for="tel">Téléphone</label><input id="tel" type="tel" autocomplete="tel" placeholder="06 12 34 56 78" /></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Colonne résultat -->
+        <aside class="result">
+          <div class="card">
+            <h2>Estimation</h2>
+            <div class="price" id="prix">0 €</div>
+            <div class="price-sub" id="prixSub">Renseignez une surface pour voir le prix</div>
+            <div class="breakdown" id="detail"></div>
+            <button class="btn" type="submit">Demander mon devis</button>
+            <p class="note">Estimation indicative TTC, hors accès particulier. Devis définitif après visite ou étude de photos.</p>
+          </div>
+        </aside>
+      </div>
+    </form>
+
+    <footer>
+      SystèmeDrone · <a href="mailto:contact@systemedrone.fr">contact@systemedrone.fr</a> · systemedrone.fr
+    </footer>
+  </div>
+
+  <dialog id="confirm">
+    <div class="modal">
+      <h3>Votre demande est prête ✅</h3>
+      <p>Vérifiez le récapitulatif, puis envoyez-nous votre demande par email.</p>
+      <div class="recap" id="recap"></div>
+      <div class="actions">
+        <button class="btn ghost" type="button" id="closeModal">Modifier</button>
+        <button class="btn" type="button" id="sendMail">Envoyer par email</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="pricing.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
