@@ -82,9 +82,23 @@ function validerConfig(cfg) {
   };
 
   verifierGrille("toiture", cfg.toiture);
-  if (cfg.murs) verifierGrille("murs", cfg.murs);
+  if (grilleRenseignee(cfg.murs)) verifierGrille("murs", cfg.murs);
 
   return err;
+}
+
+// Une grille murs entièrement vide vaut « mêmes tarifs que la toiture ».
+// C'est ce que le CMS écrit quand l'éditeur laisse la section de côté : sans
+// cette règle, un simple enregistrement ferait basculer tout le config en repli.
+// Une grille à moitié remplie, elle, reste une erreur (voir validerConfig).
+function grilleRenseignee(grille) {
+  if (!grille || typeof grille !== "object") return false;
+  return TYPES.some((type) =>
+    ETAGES.some((etage) => {
+      const ligne = grille[type] && grille[type][etage];
+      return Array.isArray(ligne) ? ligne.length > 0 : ligne != null;
+    })
+  );
 }
 
 // Tranche de surface → index de colonne dans la grille
@@ -108,7 +122,7 @@ function creerCalculateur(configBrut) {
     );
   }
 
-  const grilleMurs = config.murs || config.toiture;
+  const grilleMurs = grilleRenseignee(config.murs) ? config.murs : config.toiture;
 
   const coefficient = (grille, { type, etage, surface }) => {
     const ligne = grille[type] && grille[type][etage];
@@ -151,5 +165,5 @@ if (typeof window !== "undefined") {
   window.SystemeDrone = { creerCalculateur, validerConfig, CONFIG_DEFAUT };
 }
 if (typeof module !== "undefined") {
-  module.exports = { creerCalculateur, validerConfig, trancheIndex, CONFIG_DEFAUT };
+  module.exports = { creerCalculateur, validerConfig, trancheIndex, grilleRenseignee, CONFIG_DEFAUT };
 }

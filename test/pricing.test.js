@@ -39,6 +39,31 @@ t("surface négative ignorée", 0,
 t("murs à null = tarif de la toiture", true,
   calculerDevis({ type: "curatif", etage: "avec", surfaceMur: 150 }).cm === cfg.toiture.curatif.avec[1]);
 
+// ── Grille murs : vide = tarif toiture, partielle = erreur ────────────────
+const mursVidesCMS = JSON.parse(JSON.stringify(cfg));
+mursVidesCMS.murs = {
+  preventif: { sans: [], avec: [] },
+  curatif: { sans: [], avec: [] },
+};
+t("grille murs vide acceptée (ce que le CMS écrit)", [], validerConfig(mursVidesCMS));
+t("grille murs vide → tarif toiture", 990,
+  creerCalculateur(mursVidesCMS).calculerDevis({ type: "curatif", etage: "avec", surfaceToit: 150, surfaceMur: 40 }).total);
+
+const mursPropres = JSON.parse(JSON.stringify(cfg));
+mursPropres.murs = {
+  preventif: { sans: [1, 1, 1, 1], avec: [1, 1, 1, 1] },
+  curatif: { sans: [2, 2, 2, 2], avec: [3, 3, 3, 3] },
+};
+t("grille murs distincte appliquée", 870,
+  creerCalculateur(mursPropres).calculerDevis({ type: "curatif", etage: "avec", surfaceToit: 150, surfaceMur: 40 }).total);
+
+const mursPartiels = JSON.parse(JSON.stringify(cfg));
+mursPartiels.murs = {
+  preventif: { sans: [1, 1, 1, 1], avec: [] },
+  curatif: { sans: [], avec: [] },
+};
+t("grille murs à moitié remplie refusée", true, validerConfig(mursPartiels).length > 0);
+
 // ── Un config cassé est refusé plutôt que de sortir des devis faux ────────
 const casse = (mut) => {
   const c = JSON.parse(JSON.stringify(cfg));

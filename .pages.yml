@@ -1,8 +1,7 @@
 # Schéma d'édition pour Pages CMS (app.pagescms.org).
 # Enregistrer depuis le CMS écrit `config.json` et pousse un commit :
 # Vercel redéploie, les nouveaux tarifs sont en ligne en une vingtaine de secondes.
-media: false
-
+# Pas de clé `media` : le CMS n'édite ici qu'un fichier de tarifs, aucune image.
 content:
   - name: tarifs
     label: Grille tarifaire

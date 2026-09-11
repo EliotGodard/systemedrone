@@ -87,8 +87,9 @@ tard de savoir sur quels tarifs un devis donné a été établi.
   de plafond : `max: null`.
 - `toiture` — un coefficient en €/m² par tranche, **dans l'ordre des tranches**,
   pour chacune des quatre combinaisons préventif/curatif × sans/avec étage.
-- `murs` — `null` pour facturer les murs au même tarif que la toiture, ou la même
-  structure que `toiture` pour un tarif distinct.
+- `murs` — `null`, absent ou entièrement vide pour facturer les murs au même tarif
+  que la toiture ; sinon la même structure que `toiture`. Une grille murs
+  *partiellement* remplie est en revanche une erreur.
 
 Ajouter ou retirer une tranche demande d'ajouter ou retirer le coefficient
 correspondant sur **les quatre lignes** de la grille.
