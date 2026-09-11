@@ -1,0 +1,98 @@
+# Schéma d'édition pour Pages CMS (app.pagescms.org).
+# Enregistrer depuis le CMS écrit `config.json` et pousse un commit :
+# Vercel redéploie, les nouveaux tarifs sont en ligne en une vingtaine de secondes.
+media: false
+
+content:
+  - name: tarifs
+    label: Grille tarifaire
+    path: config.json
+    type: file
+    format: json
+    fields:
+      - name: version
+        label: Version de la grille
+        type: string
+        description: >-
+          Date de mise à jour (AAAA-MM-JJ). Elle accompagne chaque demande de devis :
+          c'est ce qui permet de savoir plus tard sur quels tarifs un devis a été établi.
+          À modifier à chaque changement de prix.
+
+      - name: tranches
+        label: Tranches de surface
+        type: object
+        list: true
+        description: >-
+          Les paliers de surface, du plus petit au plus grand. L'ordre compte : il
+          doit correspondre à celui des coefficients ci-dessous. La dernière tranche
+          n'a pas de plafond — laisser son champ « Jusqu'à » vide.
+        fields:
+          - name: max
+            label: Jusqu'à (m², exclu)
+            type: number
+            description: Vide pour la dernière tranche (« et plus »).
+          - name: label
+            label: Intitulé affiché
+            type: string
+
+      - name: toiture
+        label: Toiture — coefficients en €/m²
+        type: object
+        description: Un coefficient par tranche, dans l'ordre des tranches ci-dessus.
+        fields:
+          - name: preventif
+            label: Préventif (toiture sale)
+            type: object
+            fields:
+              - name: sans
+                label: Sans étage
+                type: number
+                list: true
+              - name: avec
+                label: Avec étage
+                type: number
+                list: true
+          - name: curatif
+            label: Curatif (toiture très sale)
+            type: object
+            fields:
+              - name: sans
+                label: Sans étage
+                type: number
+                list: true
+              - name: avec
+                label: Avec étage
+                type: number
+                list: true
+
+      - name: murs
+        label: Murs — coefficients en €/m²
+        type: object
+        description: >-
+          Laisser vide pour facturer les murs au même tarif que la toiture.
+          Sinon, remplir la même structure que ci-dessus.
+        fields:
+          - name: preventif
+            label: Préventif
+            type: object
+            fields:
+              - name: sans
+                label: Sans étage
+                type: number
+                list: true
+              - name: avec
+                label: Avec étage
+                type: number
+                list: true
+          - name: curatif
+            label: Curatif
+            type: object
+            fields:
+              - name: sans
+                label: Sans étage
+                type: number
+                list: true
+              - name: avec
+                label: Avec étage
+                type: number
+                list: true
