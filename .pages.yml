@@ -1,7 +1,6 @@
 # Schéma d'édition pour Pages CMS (app.pagescms.org).
-# Enregistrer depuis le CMS écrit `config.json` et pousse un commit :
-# Vercel redéploie, les nouveaux tarifs sont en ligne en une vingtaine de secondes.
-# Pas de clé `media` : le CMS n'édite ici qu'un fichier de tarifs, aucune image.
+# Attention : la `description` d'un champ `list` est répétée sous CHAQUE élément.
+# L'essentiel va donc dans les libellés, affichés une seule fois.
 content:
   - name: tarifs
     label: Grille tarifaire
@@ -10,27 +9,19 @@ content:
     format: json
     fields:
       - name: version
-        label: Version de la grille
+        label: Version
         type: string
-        description: >-
-          Date de mise à jour (AAAA-MM-JJ). Elle accompagne chaque demande de devis :
-          c'est ce qui permet de savoir plus tard sur quels tarifs un devis a été établi.
-          À modifier à chaque changement de prix.
+        description: Date du jour. Elle accompagne chaque demande de devis.
 
       - name: toiture
         label: Toiture
         type: object
+        description: Toujours un coefficient de plus que de seuils (3 seuils = 4 tarifs).
         fields:
           - name: tranches
-            label: Seuils de surface (m²)
+            label: Seuils de surface (m²) — borne haute exclue, ordre croissant
             type: number
             list: true
-            description: >-
-              Les paliers de dégressivité, dans l'ordre croissant. Chaque seuil est la
-              borne haute EXCLUE de sa tranche : 80, 200, 300 décrit quatre tranches —
-              moins de 80 m², 80 à 199 m², 200 à 299 m², 300 m² et plus. Il faut donc
-              toujours UN COEFFICIENT DE PLUS que de seuils. Les intitulés affichés aux
-              clients sont calculés automatiquement, il n'y a rien à écrire.
           - name: preventif
             label: Préventif — toiture sale (€/m²)
             type: object
@@ -59,16 +50,12 @@ content:
       - name: murs
         label: Murs
         type: object
-        description: >-
-          Les murs ont leurs propres seuils : une façade fait rarement la surface d'un
-          toit, la dégressivité ne peut pas suivre les mêmes paliers. Laisser toute la
-          section vide revient à facturer les murs exactement comme la toiture.
+        description: Seuils propres aux murs. Tout laisser vide = facturé comme la toiture.
         fields:
           - name: tranches
-            label: Seuils de surface (m²)
+            label: Seuils de surface (m²) — borne haute exclue, ordre croissant
             type: number
             list: true
-            description: Mêmes règles que pour la toiture — un coefficient de plus que de seuils.
           - name: preventif
             label: Préventif — mur sale (€/m²)
             type: object
