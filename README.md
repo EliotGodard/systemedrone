@@ -1,6 +1,7 @@
 # SystèmeDrone — Calculateur de devis
 
 Appli web statique pour estimer le prix d'un nettoyage de toiture / murs par drone.
+Le formulaire se parcourt étape par étape : une seule question s'affiche, centrée à l'écran.
 Reprend la formule et la grille tarifaire de la note :
 
 ```
@@ -8,10 +9,10 @@ Prix = S_T × C_T + S_M × C_M
 ```
 
 ## Fichiers
-- `index.html` — l'interface (formulaire + estimation en direct)
+- `index.html` — l'interface (parcours en 6 étapes, une question à la fois)
 - `styles.css` — le design
 - `pricing.js` — la logique de tarification (grille C_T / C_M)
-- `app.js` — l'interactivité + génération de la demande de devis par email
+- `app.js` — la navigation entre étapes, le calcul en direct et la demande de devis par email
 
 ## Lancer en local
 ```bash
