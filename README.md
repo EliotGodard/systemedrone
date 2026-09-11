@@ -55,51 +55,60 @@ schéma d'édition est dans `.pages.yml`.
 se connecter avec le compte GitHub qui héberge ce dépôt, et l'y ajouter. Le CMS
 lit `.pages.yml` et génère le formulaire d'édition automatiquement.
 
-**Au quotidien :** ouvrir « Grille tarifaire », modifier les coefficients,
-enregistrer. Le CMS pousse un commit, Vercel redéploie, les nouveaux tarifs sont
-en ligne en une vingtaine de secondes.
+**Au quotidien :** ouvrir « Grille tarifaire », modifier les seuils et les
+coefficients, enregistrer. Le CMS pousse un commit, Vercel redéploie, les
+nouveaux tarifs sont en ligne en une vingtaine de secondes.
 
 Penser à mettre à jour le champ **Version** (la date du jour) à chaque changement
 de prix : il accompagne chaque demande de devis, et c'est ce qui permettra plus
 tard de savoir sur quels tarifs un devis donné a été établi.
 
-### À la main
-
-Éditer `config.json` directement, puis `git commit` :
+### La forme du config
 
 ```json
 {
   "version": "2026-09-11",
-  "tranches": [
-    { "max": 100,  "label": "moins de 100 m²" },
-    { "max": null, "label": "300 m² et +" }
-  ],
   "toiture": {
+    "tranches": [80, 200, 300],
+    "preventif": { "sans": [5, 4, 3, 2],       "avec": [5.5, 4.5, 3.5, 2.5] },
+    "curatif":   { "sans": [5.5, 4.5, 3.5, 2.5], "avec": [6, 5, 4, 3] }
+  },
+  "murs": {
+    "tranches": [40, 80, 150],
     "preventif": { "sans": [...], "avec": [...] },
     "curatif":   { "sans": [...], "avec": [...] }
-  },
-  "murs": null
+  }
 }
 ```
 
-- `tranches` — les paliers de surface, du plus petit au plus grand. `max` est la
-  borne **exclue** (`max: 100` = « moins de 100 m² »). La dernière tranche n'a pas
-  de plafond : `max: null`.
-- `toiture` — un coefficient en €/m² par tranche, **dans l'ordre des tranches**,
-  pour chacune des quatre combinaisons préventif/curatif × sans/avec étage.
-- `murs` — `null`, absent ou entièrement vide pour facturer les murs au même tarif
-  que la toiture ; sinon la même structure que `toiture`. Une grille murs
-  *partiellement* remplie est en revanche une erreur.
+**`tranches` ne contient que les seuils.** Chacun est la borne haute *exclue* de
+sa tranche : `[80, 200, 300]` décrit quatre tranches — moins de 80 m², 80 à
+199 m², 200 à 299 m², 300 m² et plus. Il y a donc toujours **un coefficient de
+plus que de seuils**. Une liste vide décrit un tarif unique, sans dégressivité.
 
-Ajouter ou retirer une tranche demande d'ajouter ou retirer le coefficient
-correspondant sur **les quatre lignes** de la grille.
+**Les intitulés affichés (« 80 à 199 m² ») sont calculés à partir des seuils.**
+Il n'y a rien à saisir, et un intitulé ne peut plus contredire le seuil qu'il
+annonce — c'est arrivé une fois, le seuil étant passé de 100 à 80 m² sans que
+l'intitulé suivant ne bouge.
+
+**Toiture et murs ont chacun leurs propres seuils.** Une façade fait rarement la
+surface d'un toit : avec des paliers communs, la dégressivité pensée pour la
+toiture ne jouait quasiment jamais sur les murs. Chaque surface est classée sur
+les seuils de sa propre grille.
+
+Laisser toute la section `murs` vide (ou l'omettre) revient à facturer les murs
+exactement comme la toiture, seuils compris.
+
+> ⚠️ **Les tarifs murs actuellement dans `config.json` sont provisoires** — des
+> valeurs de remplissage cohérentes, en attendant les vraies. C'est ce que
+> signale le suffixe du champ `version`.
 
 ### Le garde-fou
 
 Un tarif mal saisi ne casse pas le site, il sortirait des devis faux — le pire
-des bugs, silencieux. `pricing.js` valide donc le config au chargement :
-coefficients numériques et strictement positifs, seuils de tranches croissants,
-nombre de coefficients égal au nombre de tranches, grille complète.
+des bugs, silencieux. `pricing.js` valide donc le config au chargement : seuils
+entiers, positifs et strictement croissants, coefficients numériques et
+strictement positifs, un coefficient de plus que de seuils, grille complète.
 
 Si quelque chose cloche, le config est **refusé en bloc** et l'appli repart sur la
 grille de repli embarquée dans `pricing.js`, en détaillant le problème dans la

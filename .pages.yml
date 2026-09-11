@@ -17,30 +17,22 @@ content:
           c'est ce qui permet de savoir plus tard sur quels tarifs un devis a été établi.
           À modifier à chaque changement de prix.
 
-      - name: tranches
-        label: Tranches de surface
-        type: object
-        list: true
-        description: >-
-          Les paliers de surface, du plus petit au plus grand. L'ordre compte : il
-          doit correspondre à celui des coefficients ci-dessous. La dernière tranche
-          n'a pas de plafond — laisser son champ « Jusqu'à » vide.
-        fields:
-          - name: max
-            label: Jusqu'à (m², exclu)
-            type: number
-            description: Vide pour la dernière tranche (« et plus »).
-          - name: label
-            label: Intitulé affiché
-            type: string
-
       - name: toiture
-        label: Toiture — coefficients en €/m²
+        label: Toiture
         type: object
-        description: Un coefficient par tranche, dans l'ordre des tranches ci-dessus.
         fields:
+          - name: tranches
+            label: Seuils de surface (m²)
+            type: number
+            list: true
+            description: >-
+              Les paliers de dégressivité, dans l'ordre croissant. Chaque seuil est la
+              borne haute EXCLUE de sa tranche : 80, 200, 300 décrit quatre tranches —
+              moins de 80 m², 80 à 199 m², 200 à 299 m², 300 m² et plus. Il faut donc
+              toujours UN COEFFICIENT DE PLUS que de seuils. Les intitulés affichés aux
+              clients sont calculés automatiquement, il n'y a rien à écrire.
           - name: preventif
-            label: Préventif (toiture sale)
+            label: Préventif — toiture sale (€/m²)
             type: object
             fields:
               - name: sans
@@ -52,7 +44,7 @@ content:
                 type: number
                 list: true
           - name: curatif
-            label: Curatif (toiture très sale)
+            label: Curatif — toiture très sale (€/m²)
             type: object
             fields:
               - name: sans
@@ -65,14 +57,20 @@ content:
                 list: true
 
       - name: murs
-        label: Murs — coefficients en €/m²
+        label: Murs
         type: object
         description: >-
-          Laisser vide pour facturer les murs au même tarif que la toiture.
-          Sinon, remplir la même structure que ci-dessus.
+          Les murs ont leurs propres seuils : une façade fait rarement la surface d'un
+          toit, la dégressivité ne peut pas suivre les mêmes paliers. Laisser toute la
+          section vide revient à facturer les murs exactement comme la toiture.
         fields:
+          - name: tranches
+            label: Seuils de surface (m²)
+            type: number
+            list: true
+            description: Mêmes règles que pour la toiture — un coefficient de plus que de seuils.
           - name: preventif
-            label: Préventif
+            label: Préventif — mur sale (€/m²)
             type: object
             fields:
               - name: sans
@@ -84,7 +82,7 @@ content:
                 type: number
                 list: true
           - name: curatif
-            label: Curatif
+            label: Curatif — mur très sale (€/m²)
             type: object
             fields:
               - name: sans
