@@ -30,7 +30,8 @@
     const steps = [...document.querySelectorAll(".step")];
     const LAST = steps.length - 1;
     const STEP_SURFACES = 3;
-    const STEP_CONTACT = 4;
+    const STEP_RESULTAT = 4;
+    const STEP_CONTACT = 5; // dernière étape : le prix est connu, on demande où l'envoyer
     // Étape → clé de `state` à renseigner pour pouvoir continuer
     const CHOIX = { 0: "type", 1: "etage", 2: "typeToit" };
     const STEP_TOIT = 2;
@@ -54,7 +55,7 @@
       els.bar.style.width = ((current + 1) / steps.length) * 100 + "%";
       els.stepNum.textContent = String(current + 1);
 
-      if (current === LAST) render();
+      if (current === STEP_RESULTAT) render();
 
       // Focus sur le premier champ de l'étape (sans voler le focus sur mobile)
       const first = steps[current].querySelector("input, select");
@@ -100,8 +101,11 @@
       els.error.hidden = false;
     }
 
-    // Validation de l'étape courante
+    // Validation de l'étape courante. Le message est reposé à zéro à chaque
+    // tentative : sinon une erreur corrigée reste affichée sur l'étape finale,
+    // qui ne change pas de vue en cas de succès.
     function valide() {
+      els.error.hidden = true;
       if (CHOIX[current] && !state[CHOIX[current]]) {
         erreur("⚠️ Sélectionnez une option pour continuer.");
         return false;
@@ -213,6 +217,7 @@
     // pour savoir plus tard sur quelle grille le devis a été établi.
     $("devis").addEventListener("submit", (e) => {
       e.preventDefault();
+      if (!valide()) return;
       const d = currentDevis();
       console.debug("[SystèmeDrone] demande de devis", {
         prenom: val("prenom"), nom: val("nom"), adresse: val("adresse"),
