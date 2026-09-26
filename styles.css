@@ -1,171 +1,180 @@
+/* SystèmeDrone — feuille de style du calculateur
+   Une feuille de papier posée sur une page claire : pas de carte flottante,
+   une seule famille de caractères, une seule couleur forte. */
+
 :root {
-  --bg: #0b1220;
-  --bg-soft: #111c30;
-  --card: #ffffff;
-  --ink: #0f2035;
-  --ink-soft: #5b6b80;
-  --line: #e2e8f0;
-  --brand: #1d6fe0;
-  --brand-dark: #144ea3;
-  --accent: #16c6a4;
-  --shadow: 0 24px 60px rgba(4, 10, 20, 0.45);
-  --radius: 18px;
+  --page: #e8ebe4;        /* lichen pâle */
+  --paper: #ffffff;
+  --ink: #2b333b;         /* ardoise */
+  --ink-soft: #5d666d;
+  --line: #c3c9c0;
+  --line-strong: #8f978c;
+  --moss: #4f6b3c;        /* choix retenu, bouton principal */
+  --moss-dark: #3e5530;
+  --tile: #7a4a2e;        /* le prix, et lui seul */
+  --alert: #8c3b2e;
+  --radius: 4px;
+  --col: 600px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+html { background: var(--page); }
+
 body {
-  font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Bitter", Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  line-height: 1.55;
   color: var(--ink);
-  background:
-    radial-gradient(1200px 600px at 80% -10%, #1a3358 0%, transparent 60%),
-    linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
-  background-attachment: fixed;
+  background: var(--page);
   min-height: 100vh;
-  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ── Centrage plein écran : une seule étape à la fois ─────────────────── */
+/* ── Colonne centrée, texte aligné à gauche ────────────────────────────── */
 .app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  padding: 28px 20px;
-  text-align: center;
+  width: min(var(--col), 100% - 32px);
+  margin: 0 auto;
+  padding: 40px 0 32px;
 }
+@media (max-width: 520px) { .app { padding-top: 28px; } }
 
-/* Header */
-header { display: flex; align-items: center; justify-content: center; gap: 14px; }
-.logo {
-  width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center;
-  background: linear-gradient(135deg, var(--brand), var(--accent));
-  box-shadow: 0 6px 20px rgba(29, 111, 224, .45); flex: none;
-}
-.logo svg { width: 26px; height: 26px; }
-.brand { text-align: left; }
-.brand h1 { color: #fff; font-size: 20px; letter-spacing: .3px; }
+/* En-tête : la marque et ce qu'elle fait, rien d'autre */
+header { margin-bottom: 40px; }
+header h1 { font-size: 21px; font-weight: 600; letter-spacing: -.01em; }
+.tagline { color: var(--ink-soft); font-size: 15px; margin-top: 2px; }
 
-/* Le formulaire porte la largeur : sinon la carte se recalcule sur le contenu
-   de chaque étape et sa largeur change d'un écran à l'autre. */
-#devis { width: min(620px, 100%); }
+/* Le formulaire occupe l'espace restant et se centre verticalement */
+#devis { flex: 1; }
+.stage { width: 100%; }
 
-/* La carte-étape, centrée */
-.stage {
-  background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 34px 32px 28px;
-  width: 100%;
-  text-align: left;
-}
-@media (max-width: 520px) { .stage { padding: 26px 20px 22px; } }
-
-/* Progression */
-.progress { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
-.progress .track { flex: 1; height: 6px; border-radius: 99px; background: #eef2f7; overflow: hidden; }
+/* Progression : une ligne fine, et le compte en toutes lettres */
+.progress { margin-bottom: 32px; }
+.steps-count { font-size: 15px; color: var(--ink-soft); margin-bottom: 10px; font-variant-numeric: tabular-nums; }
+.progress .track { height: 2px; background: var(--line); }
 .progress .bar {
-  height: 100%; width: 16.66%; border-radius: 99px;
-  background: linear-gradient(90deg, var(--brand), var(--accent));
+  height: 100%; width: 16.66%; background: var(--moss);
   transition: width .35s cubic-bezier(.4, 0, .2, 1);
 }
-.steps-count { font-size: 13px; font-weight: 700; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
-.steps-count .sep { margin: 0 3px; opacity: .5; }
-.steps-count #stepNum { color: var(--brand); }
+@media (prefers-reduced-motion: reduce) { .progress .bar { transition: none; } }
 
-/* Zone des étapes : hauteur figée sur la plus haute, la carte ne bouge plus */
-.steps-area { display: flex; flex-direction: column; }
-
-/* Une étape */
-.step { animation: enter .32s cubic-bezier(.2, .7, .3, 1) both; flex: 1; display: flex; flex-direction: column; }
+/* ── Une étape ─────────────────────────────────────────────────────────── */
+.step { animation: enter .3s cubic-bezier(.2, .7, .3, 1) both; }
 .step[hidden] { display: none; }
 @keyframes enter {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: none; }
 }
 @media (prefers-reduced-motion: reduce) { .step { animation: none; } }
 
-.eyebrow {
-  font-size: 12px; font-weight: 700; letter-spacing: .9px; text-transform: uppercase;
-  color: var(--brand); margin-bottom: 8px;
+.step h2 {
+  font-size: 30px; font-weight: 600; line-height: 1.2; letter-spacing: -.015em;
+  margin-bottom: 28px; max-width: 18em;
 }
-.step h2 { font-size: 24px; line-height: 1.25; letter-spacing: -.4px; margin-bottom: 24px; }
-@media (max-width: 520px) { .step h2 { font-size: 21px; } }
-/* Les champs se centrent dans l'espace libre entre le titre et la navigation */
-.step .body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+@media (max-width: 520px) { .step h2 { font-size: 25px; margin-bottom: 22px; } }
 
-/* Choix segmentés */
-.field { margin-bottom: 20px; }
-.field:last-child { margin-bottom: 0; }
-.label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 8px; }
-.hint { color: var(--ink-soft); font-weight: 400; font-size: 12px; }
-
-.seg { display: flex; gap: 10px; flex-wrap: wrap; }
+/* Choix : des lignes empilées, pleine largeur, comme les cases d'un formulaire */
+.seg { display: flex; flex-direction: column; gap: 10px; }
 .seg button {
-  flex: 1 1 140px; cursor: pointer; border: 1.5px solid var(--line); background: #f8fafc;
-  padding: 18px 14px; border-radius: 14px; font-size: 15px; font-weight: 700; color: var(--ink);
-  transition: all .15s ease; text-align: center; font-family: inherit;
+  display: block; width: 100%; text-align: left; cursor: pointer;
+  padding: 16px 18px;
+  border: 1px solid var(--line-strong); border-radius: var(--radius);
+  background: var(--paper); color: var(--ink);
+  font: inherit; font-size: 18px; font-weight: 600; line-height: 1.3;
+  transition: background-color .12s ease, border-color .12s ease, color .12s ease;
 }
-.seg button small { display: block; font-weight: 400; font-size: 11px; color: var(--ink-soft); margin-top: 3px; }
-.seg button:hover { border-color: #c3d3e6; transform: translateY(-1px); }
+.seg button small { display: block; font-weight: 400; font-size: 15px; color: var(--ink-soft); margin-top: 2px; }
+.seg button:hover { border-color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--moss); border-color: var(--moss); color: #fff; }
+.seg button[aria-pressed="true"] small { color: rgba(255, 255, 255, .8); }
+.seg button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .seg button { transition: none; } }
 
 /* Champ « Autre » : précision du matériau */
-.precision { margin-top: 18px; }
+.precision { margin-top: 22px; }
 .precision[hidden] { display: none; }
 
-/* Champs */
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+/* ── Champs ────────────────────────────────────────────────────────────── */
+.field { margin-bottom: 22px; }
+.field:last-child { margin-bottom: 0; }
+.label { display: block; font-weight: 600; font-size: 16px; margin-bottom: 8px; }
+.hint { color: var(--ink-soft); font-weight: 400; font-size: 15px; }
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
-.row + .field, .field + .row { margin-top: 20px; }
-input, select {
-  width: 100%; padding: 13px 14px; border: 1.5px solid var(--line); border-radius: 12px;
-  font-size: 15px; color: var(--ink); background: #fff; font-family: inherit;
+.row + .field, .field + .row { margin-top: 22px; }
+
+input {
+  width: 100%; padding: 13px 14px;
+  border: 1px solid var(--line-strong); border-radius: var(--radius);
+  font: inherit; color: var(--ink); background: var(--paper);
 }
-input:focus, select:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(29,111,224,.15); }
+input::placeholder { color: #a0a7a3; }
+input:focus { outline: 2px solid var(--moss); outline-offset: -1px; border-color: var(--moss); }
+input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
 .suffix { position: relative; }
-.suffix input { padding-right: 42px; }
-.suffix span { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--ink-soft); font-size: 14px; }
+.suffix input { padding-right: 48px; }
+.suffix span { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--ink-soft); pointer-events: none; }
 
-/* Étape résultat */
+/* ── Résultat : le prix est le seul moment fort de la page ─────────────── */
 .result .price {
-  font-size: 52px; font-weight: 800; letter-spacing: -1.5px; margin: 10px 0 2px;
-  background: linear-gradient(90deg, var(--brand), var(--accent));
-  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  font-size: 64px; font-weight: 600; line-height: 1; letter-spacing: -.02em;
+  color: var(--tile); font-variant-numeric: tabular-nums;
+  margin-bottom: 8px;
 }
-.result .price-sub { color: var(--ink-soft); font-size: 13px; margin-bottom: 18px; }
-.breakdown { border-top: 1px solid var(--line); padding-top: 14px; font-size: 14px; }
-.breakdown .line { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; color: var(--ink-soft); }
-.breakdown .line b { color: var(--ink); font-weight: 600; }
-.breakdown .muted { font-size: 12px; color: #8a9bb0; }
-.breakdown .total { border-top: 1px dashed var(--line); margin-top: 8px; padding-top: 12px; font-size: 16px; color: var(--ink); }
-.breakdown .total b { font-size: 19px; color: var(--brand-dark); }
+@media (max-width: 520px) { .result .price { font-size: 52px; } }
+.result .price-sub { color: var(--ink-soft); font-size: 16px; margin-bottom: 28px; }
 
-/* Erreur de validation */
-.error {
-  margin-top: 16px; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 600;
-  background: #fef2f2; color: #b42318; border: 1px solid #fecdca;
+.breakdown { border-top: 1px solid var(--ink); }
+.breakdown .line {
+  display: flex; justify-content: space-between; gap: 16px; align-items: baseline;
+  padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 16px;
 }
+.breakdown .line b { font-weight: 400; font-variant-numeric: tabular-nums; }
+.breakdown .muted { color: var(--ink-soft); }
+.breakdown .total { border-bottom: 1px solid var(--ink); font-weight: 600; }
+.breakdown .total b { font-weight: 600; }
+
+.note { font-size: 14px; color: var(--ink-soft); margin-top: 18px; max-width: 34em; }
+
+/* Erreur de validation : une phrase, pas une boîte */
+.error { margin-top: 18px; font-size: 16px; color: var(--alert); }
 .error[hidden] { display: none; }
 
-/* Navigation */
-.nav { display: flex; gap: 10px; margin-top: 26px; min-height: 50px; }
+/* ── Navigation ────────────────────────────────────────────────────────── */
+.nav { display: flex; gap: 12px; margin-top: 32px; }
+.nav:empty { display: none; }
 .btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex: 1;
-  padding: 14px 18px; border: none; border-radius: 12px; cursor: pointer;
-  background: linear-gradient(135deg, var(--brand), var(--accent)); color: #fff;
-  font-size: 15px; font-weight: 700; font-family: inherit;
-  transition: transform .1s ease, box-shadow .2s ease;
-  box-shadow: 0 8px 24px rgba(22,198,164,.35);
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 14px 24px; cursor: pointer;
+  border: 1px solid var(--moss); border-radius: var(--radius);
+  background: var(--moss); color: #fff;
+  font: inherit; font-size: 17px; font-weight: 600; line-height: 1.2;
+  transition: background-color .12s ease, border-color .12s ease;
 }
-.btn:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(22,198,164,.45); }
-.btn:active { transform: translateY(0); }
-.btn.ghost { flex: 0 0 auto; background: #eef2f7; color: var(--ink); box-shadow: none; }
-.btn.ghost:hover { background: #e3e9f2; box-shadow: none; }
+.btn:hover { background: var(--moss-dark); border-color: var(--moss-dark); }
+.btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+.btn.ghost:hover { background: transparent; border-color: var(--ink); }
 .btn[hidden] { display: none; }
+@media (max-width: 520px) {
+  .nav { flex-direction: column; gap: 6px; }   /* sur mobile : le bouton principal au-dessus, pleine largeur */
+  .btn.ghost { order: 1; border-color: transparent; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--line-strong); }
+  .btn.ghost:hover { border-color: transparent; text-decoration-color: var(--ink); }
+}
+@media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
 
-.note { font-size: 12px; color: var(--ink-soft); margin-top: 14px; }
-
-footer { color: #7f9dc4; font-size: 13px; }
-footer a { color: #9cc0ef; }
+/* ── Pied de page ──────────────────────────────────────────────────────── */
+footer {
+  margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; gap: 6px 24px;
+  font-size: 14px; color: var(--ink-soft);
+}
+footer a { color: var(--ink); text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
+footer a:hover { text-decoration-color: var(--ink); }

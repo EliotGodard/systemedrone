@@ -1,7 +1,7 @@
 # SystèmeDrone — Calculateur de devis
 
 Appli web statique pour estimer le prix d'un nettoyage de toiture / murs par drone.
-Le formulaire se parcourt étape par étape : une seule question s'affiche, centrée à l'écran.
+Le formulaire se parcourt étape par étape : une seule question s'affiche à la fois.
 Reprend la formule et la grille tarifaire de la note :
 
 ```

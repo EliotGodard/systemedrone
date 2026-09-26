@@ -23,7 +23,6 @@
       error: $("error"),
       prev: $("prev"), next: $("next"), send: $("send"),
       bar: $("bar"), stepNum: $("stepNum"), stepTotal: $("stepTotal"),
-      area: document.querySelector(".steps-area"),
       precision: $("precisionToit"), autreToit: $("autreToit"),
     };
 
@@ -64,30 +63,6 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // Fige la hauteur de la carte sur l'étape la plus haute (message d'erreur inclus),
-    // pour que la carte garde exactement la même taille d'une étape à l'autre.
-    function figerHauteur() {
-      const errHidden = els.error.hidden, errText = els.error.textContent;
-      els.area.style.minHeight = "0px";
-      els.error.hidden = false;
-      els.error.textContent = "M"; // gabarit : un message d'une ligne
-
-      const precHidden = els.precision.hidden;
-      els.precision.hidden = false;
-
-      let max = 0;
-      steps.forEach((_, i) => {
-        steps.forEach((s, j) => { s.style.animation = "none"; s.hidden = j !== i; });
-        max = Math.max(max, els.area.offsetHeight);
-      });
-
-      steps.forEach((s, j) => { s.style.animation = ""; s.hidden = j !== current; });
-      els.precision.hidden = precHidden;
-      els.error.hidden = errHidden;
-      els.error.textContent = errText;
-      els.area.style.minHeight = max + "px";
-    }
-
     // L'étape « matériau » attend une précision libre quand « Autre » est choisi.
     function attendPrecision() { return current === STEP_TOIT && state.typeToit === "autre"; }
 
@@ -107,21 +82,21 @@
     function valide() {
       els.error.hidden = true;
       if (CHOIX[current] && !state[CHOIX[current]]) {
-        erreur("⚠️ Sélectionnez une option pour continuer.");
+        erreur("Sélectionnez une option pour continuer.");
         return false;
       }
       if (attendPrecision() && !val("autreToit")) {
-        erreur("⚠️ Précisez le type de toiture.");
+        erreur("Précisez le type de toiture.");
         els.autreToit.focus();
         return false;
       }
       if (current === STEP_SURFACES && currentDevis().total <= 0) {
-        erreur("⚠️ Indiquez au moins une surface à traiter.");
+        erreur("Indiquez au moins une surface à traiter.");
         els.surfaceToit.focus();
         return false;
       }
       if (current === STEP_CONTACT && !val("email") && !val("tel")) {
-        erreur("⚠️ Renseignez un email ou un téléphone pour être recontacté.");
+        erreur("Renseignez un email ou un téléphone pour être recontacté.");
         $("email").focus();
         return false;
       }
@@ -146,6 +121,7 @@
         const btn = e.target.closest("button");
         if (!btn) return;
         state[key] = btn.dataset.val;
+        group.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
         if (key === "typeToit") {
           els.precision.hidden = state.typeToit !== "autre";
           if (!els.precision.hidden) els.autreToit.focus();
@@ -191,9 +167,9 @@
       els.prix.textContent = euro(d.total);
       if (d.total > 0) {
         els.prixSub.textContent =
-          (state.type === "preventif" ? "Préventif" : "Curatif") +
-          " · " + (state.etage === "avec" ? "avec étage" : "sans étage") +
-          " · " + libelleToit();
+          "Nettoyage " + (state.type === "preventif" ? "préventif" : "curatif") +
+          ", " + (state.etage === "avec" ? "avec étage" : "sans étage") +
+          ", toiture " + libelleToit();
       } else {
         els.prixSub.textContent = "Renseignez une surface pour voir le prix";
       }
@@ -232,14 +208,6 @@
 
     render();
     showStep(0);
-    figerHauteur();
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(figerHauteur);
-
-    let resizeTimer;
-    window.addEventListener("resize", () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(figerHauteur, 150);
-    });
   }
 
   // ── Démarrage : charger les tarifs, puis monter le formulaire ─────────
