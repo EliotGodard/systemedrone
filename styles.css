@@ -163,12 +163,20 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line-strong); }
 .btn.ghost:hover { background: transparent; border-color: var(--ink); }
 .btn[hidden] { display: none; }
+.btn:disabled { opacity: .6; cursor: progress; }
 @media (max-width: 520px) {
   .nav { flex-direction: column; gap: 6px; }   /* sur mobile : le bouton principal au-dessus, pleine largeur */
   .btn.ghost { order: 1; border-color: transparent; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--line-strong); }
   .btn.ghost:hover { border-color: transparent; text-decoration-color: var(--ink); }
 }
 @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
+
+/* ── Confirmation d'envoi ───────────────────────────────────────────── */
+.confirmation { flex: 1; animation: enter .3s cubic-bezier(.2, .7, .3, 1) both; }
+.confirmation[hidden], #devis[hidden] { display: none; }
+.confirmation h2 { font-size: 30px; font-weight: 600; line-height: 1.2; letter-spacing: -.015em; margin-bottom: 16px; }
+.confirmation p { font-size: 18px; color: var(--ink-soft); max-width: 30em; }
+@media (prefers-reduced-motion: reduce) { .confirmation { animation: none; } }
 
 /* ── Pied de page ──────────────────────────────────────────────────────── */
 footer {

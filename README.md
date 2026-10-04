@@ -15,7 +15,10 @@ Prix = S_T × C_T + S_M × C_M
 - `pricing.js` — la logique de tarification, calculée à partir de `config.json`
 - `app.js` — la navigation entre étapes et le calcul en direct
 - `.pages.yml` — le schéma d'édition du CMS
+- `api/devis.js` — la fonction Vercel qui envoie le devis par email
+- `api/_email.js` — le contenu de cet email (récapitulatif du devis et des coordonnées)
 - `test/pricing.test.js` — les tests de la tarification
+- `test/email.test.js` — les tests de l'envoi par email (aucun email réel n'est envoyé)
 
 ## Lancer en local
 ```bash
@@ -30,6 +33,7 @@ rabat sur les tarifs de repli et le prévient dans la console.
 ## Tests
 ```bash
 node test/pricing.test.js
+node test/email.test.js
 ```
 Aucune dépendance. À relancer après toute modification de `pricing.js` ou de la
 forme de `config.json`.
@@ -40,7 +44,32 @@ npm i -g vercel
 vercel        # preview
 vercel --prod # production
 ```
-Aucun build nécessaire : c'est un site statique.
+Aucun build nécessaire : un site statique, plus une fonction (`api/devis.js`).
+
+## L'envoi du devis par email
+
+Au clic sur « Demander mon devis », le navigateur envoie la demande à
+`/api/devis`. La fonction **recalcule le prix** à partir de `config.json` (le
+montant affiché dans le navigateur n'est jamais repris tel quel), puis envoie
+par [Resend](https://resend.com) un email récapitulant le devis — prestation,
+surfaces, détail du prix, total, version de la grille — et les coordonnées
+saisies :
+
+- si le client a laissé un email, il le reçoit, avec SystèmeDrone en copie
+  cachée ; « Répondre » écrit à SystèmeDrone ;
+- sinon (téléphone seul), l'email part uniquement à SystèmeDrone.
+
+**À configurer une fois** dans Vercel → Settings → Environment Variables :
+
+| Variable | Rôle |
+| --- | --- |
+| `RESEND_API_KEY` | la clé API Resend |
+| `DEVIS_EXPEDITEUR` | l'adresse d'envoi, sur un domaine vérifié chez Resend — ex. `SystèmeDrone <devis@systemedrone.fr>` |
+| `DEVIS_DESTINATAIRE` | qui reçoit les demandes (défaut : `contact@systemedrone.fr`) |
+
+Sans ces variables, la demande échoue proprement : le client voit un message
+l'invitant à écrire à contact@systemedrone.fr. En local avec `npx serve`, la
+route n'existe pas ; utiliser `vercel dev` pour tester l'envoi.
 
 ---
 
