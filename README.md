@@ -72,7 +72,7 @@ tard de savoir sur quels tarifs un devis donné a été établi.
     "paliers": [
       { "a_partir_de": 0,   "preventif_sans": 5, "preventif_avec": 5.5, "curatif_sans": 5.5, "curatif_avec": 6 },
       { "a_partir_de": 101, "preventif_sans": 4, "preventif_avec": 4.5, "curatif_sans": 4.5, "curatif_avec": 5 },
-      { "a_partir_de": 300, "preventif_sans": 3, "preventif_avec": 3.5, "curatif_sans": 3.5, "curatif_avec": 4 }
+      { "a_partir_de": 301, "preventif_sans": 3, "preventif_avec": 3.5, "curatif_sans": 3.5, "curatif_avec": 4 }
     ]
   },
   "murs": { "paliers": [ ... ] }
@@ -81,7 +81,7 @@ tard de savoir sur quels tarifs un devis donné a été établi.
 
 **Une ligne par palier**, avec sa surface de départ et ses quatre prix — la
 forme d'une grille tarifaire papier. L'exemple ci-dessus décrit trois tranches :
-moins de 101 m², 101 à 299 m², 300 m² et plus.
+moins de 101 m², 101 à 300 m², 301 m² et plus.
 
 Cette forme remplace l'ancienne (une liste de seuils + quatre listes de prix
 dont les longueurs devaient concorder) : le client y avait saisi autant de

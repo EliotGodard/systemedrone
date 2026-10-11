@@ -20,15 +20,15 @@ const CONFIG_DEFAUT = {
   version: "repli",
   toiture: {
     paliers: [
-      palier(50, 4.5, 4, 5, 5.5),
+      palier(0, 4.5, 4, 5, 5.5),
       palier(101, 3.5, 3.5, 4, 4.5),
       palier(201, 2.5, 2.5, 3, 3.5),
-      palier(300, 2, 2, 2, 2),
+      palier(301, 2, 2, 2, 2),
     ],
   },
   murs: {
     paliers: [
-      palier(50, 3.5, 4, 4, 4.5),
+      palier(0, 3.5, 4, 4, 4.5),
       palier(101, 3, 3.5, 3.5, 4),
       palier(201, 2.5, 3, 3, 3.5),
       palier(301, 2, 2.5, 2, 3),

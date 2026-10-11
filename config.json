@@ -3,7 +3,7 @@
   "toiture": {
     "paliers": [
       {
-        "a_partir_de": 50,
+        "a_partir_de": 0,
         "preventif_sans": 4.5,
         "preventif_avec": 4,
         "curatif_sans": 5,
@@ -24,7 +24,7 @@
         "curatif_avec": 3.5
       },
       {
-        "a_partir_de": 300,
+        "a_partir_de": 301,
         "preventif_sans": 2,
         "preventif_avec": 2,
         "curatif_sans": 2,
@@ -35,7 +35,7 @@
   "murs": {
     "paliers": [
       {
-        "a_partir_de": 50,
+        "a_partir_de": 0,
         "preventif_sans": 3.5,
         "preventif_avec": 4,
         "curatif_sans": 4,
