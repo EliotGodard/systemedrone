@@ -1,6 +1,10 @@
 # Schéma d'édition pour Pages CMS (app.pagescms.org).
 # Attention : la `description` d'un champ `list` est répétée sous CHAQUE élément.
 # L'essentiel va donc dans les libellés, affichés une seule fois.
+#
+# Une ligne = un palier, avec sa surface de départ et ses quatre prix : il est
+# impossible d'avoir plus de seuils que de prix. Le CMS refuse d'enregistrer une
+# case vide ou une valeur négative ; pricing.js vérifie le reste (doublons).
 content:
   - name: tarifs
     label: Grille tarifaire
@@ -16,67 +20,71 @@ content:
       - name: toiture
         label: Toiture
         type: object
-        description: Toujours un coefficient de plus que de seuils (3 seuils = 4 tarifs).
+        description: Le palier le plus bas s'applique aussi aux surfaces plus petites.
         fields:
-          - name: tranches
-            label: Seuils de surface (m²) — borne haute exclue, ordre croissant
-            type: number
-            list: true
-          - name: preventif
-            label: Préventif — toiture sale (€/m²)
+          - name: paliers
+            label: Paliers — une ligne par tranche de surface, dans n'importe quel ordre
             type: object
+            list: { min: 1, collapsible: { collapsed: false, summary: "À partir de {fields.a_partir_de} m²" } }
             fields:
-              - name: sans
-                label: Sans étage
+              - name: a_partir_de
+                label: À partir de (m²)
                 type: number
-                list: true
-              - name: avec
-                label: Avec étage
+                required: true
+                options: { min: 0, step: 1 }
+              - name: preventif_sans
+                label: Préventif (toiture sale), sans étage — €/m²
                 type: number
-                list: true
-          - name: curatif
-            label: Curatif — toiture très sale (€/m²)
-            type: object
-            fields:
-              - name: sans
-                label: Sans étage
+                required: true
+                options: { min: 0.01, step: 0.01 }
+              - name: preventif_avec
+                label: Préventif (toiture sale), avec étage — €/m²
                 type: number
-                list: true
-              - name: avec
-                label: Avec étage
+                required: true
+                options: { min: 0.01, step: 0.01 }
+              - name: curatif_sans
+                label: Curatif (toiture très sale), sans étage — €/m²
                 type: number
-                list: true
+                required: true
+                options: { min: 0.01, step: 0.01 }
+              - name: curatif_avec
+                label: Curatif (toiture très sale), avec étage — €/m²
+                type: number
+                required: true
+                options: { min: 0.01, step: 0.01 }
 
       - name: murs
         label: Murs
         type: object
-        description: Seuils propres aux murs. Tout laisser vide = facturé comme la toiture.
+        description: Paliers propres aux murs. Aucun palier = facturé comme la toiture.
         fields:
-          - name: tranches
-            label: Seuils de surface (m²) — borne haute exclue, ordre croissant
-            type: number
-            list: true
-          - name: preventif
-            label: Préventif — mur sale (€/m²)
+          - name: paliers
+            label: Paliers — une ligne par tranche de surface, dans n'importe quel ordre
             type: object
+            list: { collapsible: { collapsed: false, summary: "À partir de {fields.a_partir_de} m²" } }
             fields:
-              - name: sans
-                label: Sans étage
+              - name: a_partir_de
+                label: À partir de (m²)
                 type: number
-                list: true
-              - name: avec
-                label: Avec étage
+                required: true
+                options: { min: 0, step: 1 }
+              - name: preventif_sans
+                label: Préventif (mur sale), sans étage — €/m²
                 type: number
-                list: true
-          - name: curatif
-            label: Curatif — mur très sale (€/m²)
-            type: object
-            fields:
-              - name: sans
-                label: Sans étage
+                required: true
+                options: { min: 0.01, step: 0.01 }
+              - name: preventif_avec
+                label: Préventif (mur sale), avec étage — €/m²
                 type: number
-                list: true
-              - name: avec
-                label: Avec étage
+                required: true
+                options: { min: 0.01, step: 0.01 }
+              - name: curatif_sans
+                label: Curatif (mur très sale), sans étage — €/m²
                 type: number
-                list: true
+                required: true
+                options: { min: 0.01, step: 0.01 }
+              - name: curatif_avec
+                label: Curatif (mur très sale), avec étage — €/m²
+                type: number
+                required: true
+                options: { min: 0.01, step: 0.01 }

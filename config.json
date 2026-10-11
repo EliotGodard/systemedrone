@@ -1,75 +1,67 @@
 {
   "version": "2026-09-11-murs-provisoires",
   "toiture": {
-    "tranches": [
-      50,
-      101,
-      201,
-      300
-    ],
-    "preventif": {
-      "sans": [
-        4.5,
-        3.5,
-        2.5,
-        2
-      ],
-      "avec": [
-        4,
-        3.5,
-        2.5,
-        2
-      ]
-    },
-    "curatif": {
-      "sans": [
-        5,
-        4,
-        3,
-        2
-      ],
-      "avec": [
-        5.5,
-        4.5,
-        3.5,
-        2
-      ]
-    }
+    "paliers": [
+      {
+        "a_partir_de": 50,
+        "preventif_sans": 4.5,
+        "preventif_avec": 4,
+        "curatif_sans": 5,
+        "curatif_avec": 5.5
+      },
+      {
+        "a_partir_de": 101,
+        "preventif_sans": 3.5,
+        "preventif_avec": 3.5,
+        "curatif_sans": 4,
+        "curatif_avec": 4.5
+      },
+      {
+        "a_partir_de": 201,
+        "preventif_sans": 2.5,
+        "preventif_avec": 2.5,
+        "curatif_sans": 3,
+        "curatif_avec": 3.5
+      },
+      {
+        "a_partir_de": 300,
+        "preventif_sans": 2,
+        "preventif_avec": 2,
+        "curatif_sans": 2,
+        "curatif_avec": 2
+      }
+    ]
   },
   "murs": {
-    "tranches": [
-      50,
-      101,
-      201,
-      301
-    ],
-    "preventif": {
-      "sans": [
-        3.5,
-        3,
-        2.5,
-        2
-      ],
-      "avec": [
-        4,
-        3.5,
-        3,
-        2.5
-      ]
-    },
-    "curatif": {
-      "sans": [
-        4,
-        3.5,
-        3,
-        2
-      ],
-      "avec": [
-        4.5,
-        4,
-        3.5,
-        3
-      ]
-    }
+    "paliers": [
+      {
+        "a_partir_de": 50,
+        "preventif_sans": 3.5,
+        "preventif_avec": 4,
+        "curatif_sans": 4,
+        "curatif_avec": 4.5
+      },
+      {
+        "a_partir_de": 101,
+        "preventif_sans": 3,
+        "preventif_avec": 3.5,
+        "curatif_sans": 3.5,
+        "curatif_avec": 4
+      },
+      {
+        "a_partir_de": 201,
+        "preventif_sans": 2.5,
+        "preventif_avec": 3,
+        "curatif_sans": 3,
+        "curatif_avec": 3.5
+      },
+      {
+        "a_partir_de": 301,
+        "preventif_sans": 2,
+        "preventif_avec": 2.5,
+        "curatif_sans": 2,
+        "curatif_avec": 3
+      }
+    ]
   }
 }
