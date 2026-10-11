@@ -55,17 +55,20 @@ par [Resend](https://resend.com) un email récapitulant le devis — prestation,
 surfaces, détail du prix, total, version de la grille — et les coordonnées
 saisies :
 
-- si le client a laissé un email, il le reçoit, avec SystèmeDrone en copie
-  cachée ; « Répondre » écrit à SystèmeDrone ;
-- sinon (téléphone seul), l'email part uniquement à SystèmeDrone.
+- SystèmeDrone reçoit toujours sa copie, à `DEVIS_DESTINATAIRE` ; « Répondre »
+  y écrit directement au client ;
+- si le client a laissé un email, il reçoit son récapitulatif dans un email
+  séparé, envoyé depuis `DEVIS_EXPEDITEUR` ; « Répondre » écrit à cette même
+  adresse. `DEVIS_DESTINATAIRE` n'apparaît jamais chez le client : elle peut
+  rester une adresse privée.
 
 **À configurer une fois** dans Vercel → Settings → Environment Variables :
 
 | Variable | Rôle |
 | --- | --- |
 | `RESEND_API_KEY` | la clé API Resend |
-| `DEVIS_EXPEDITEUR` | l'adresse d'envoi, sur un domaine vérifié chez Resend — ex. `SystèmeDrone <devis@systemedrone.fr>` |
-| `DEVIS_DESTINATAIRE` | qui reçoit les demandes (défaut : `contact@systemedrone.fr`) |
+| `DEVIS_EXPEDITEUR` | l'adresse d'envoi, sur un domaine vérifié chez Resend — ex. `SystèmeDrone <devis@systemedrone.fr>`. Les réponses des clients y arrivent : la rediriger (OVH → Emails → Redirections) vers la boîte qui traite les devis |
+| `DEVIS_DESTINATAIRE` | qui reçoit les demandes (défaut : `contact@systemedrone.fr`) ; jamais montrée au client |
 
 Sans ces variables, la demande échoue proprement : le client voit un message
 l'invitant à écrire à contact@systemedrone.fr. En local avec `npx serve`, la

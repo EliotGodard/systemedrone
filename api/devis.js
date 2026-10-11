@@ -6,8 +6,10 @@
 // Variables d'environnement (Vercel → Settings → Environment Variables) :
 //   RESEND_API_KEY      clé API Resend (https://resend.com)
 //   DEVIS_EXPEDITEUR    adresse d'envoi, sur un domaine vérifié chez Resend
-//                       (ex. « SystèmeDrone <devis@systemedrone.fr> »)
-//   DEVIS_DESTINATAIRE  qui reçoit les demandes (défaut : contact@systemedrone.fr)
+//                       (ex. « SystèmeDrone <devis@systemedrone.fr> »). C'est
+//                       aussi là qu'arrivent les réponses des clients.
+//   DEVIS_DESTINATAIRE  qui reçoit les demandes (défaut : contact@systemedrone.fr).
+//                       Jamais montrée au client : elle peut rester privée.
 const { creerCalculateur } = require("../pricing.js");
 const config = require("../config.json");
 const { lireDemande, construireEmail } = require("./_email.js");
@@ -39,25 +41,28 @@ module.exports = async function handler(req, res) {
 
   const { sujet, texte, html } = construireEmail(demande, devis, calculateur.version);
 
-  // Le client reçoit son récapitulatif s'il a laissé un email ; SystèmeDrone
-  // en reçoit toujours une copie, et peut lui répondre directement.
-  const envoi = {
+  // Deux emails distincts, pour que l'adresse de SystèmeDrone n'apparaisse
+  // jamais chez le client :
+  //  - SystèmeDrone reçoit sa copie, où « Répondre » écrit au client ;
+  //  - le client reçoit son récapitulatif (s'il a laissé un email) ; sans
+  //    reply_to, « Répondre » écrit à l'expéditeur, DEVIS_EXPEDITEUR.
+  const envois = [{
     from: DEVIS_EXPEDITEUR,
-    to: demande.email ? [demande.email] : [destinataire],
-    subject: sujet,
+    to: [destinataire],
+    subject: "Nouvelle demande — " + sujet,
     text: texte,
     html,
-  };
+    ...(demande.email && { reply_to: demande.email }),
+  }];
   if (demande.email) {
-    envoi.bcc = [destinataire];
-    envoi.reply_to = destinataire;
+    envois.push({ from: DEVIS_EXPEDITEUR, to: [demande.email], subject: sujet, text: texte, html });
   }
 
   try {
-    const r = await fetch("https://api.resend.com/emails", {
+    const r = await fetch("https://api.resend.com/emails/batch", {
       method: "POST",
       headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify(envoi),
+      body: JSON.stringify(envois),
     });
     if (!r.ok) {
       console.error("[devis] Resend a refusé l'envoi :", r.status, await r.text());

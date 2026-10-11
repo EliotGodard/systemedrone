@@ -67,12 +67,23 @@ const appeler = async (corps, { method = "POST", reponseResend = { ok: true } } 
   let { res, envois } = await appeler({ ...DEMANDE, total: 1 });
   t("envoi réussi → 200", 200, res.statut);
   t("un seul appel à Resend", 1, envois.length);
-  t("envoyé au client", ["jeanne@exemple.fr"], envois[0].corps.to);
-  t("copie à SystèmeDrone", ["contact@systemedrone.fr"], envois[0].corps.bcc);
-  t("prix recalculé, pas celui du client", true, res.json.total > 1 && envois[0].corps.text.includes("Total"));
+  const [interne, client] = envois[0].corps;
+  t("deux emails : SystèmeDrone et le client", 2, envois[0].corps.length);
+  t("copie interne à SystèmeDrone", ["contact@systemedrone.fr"], interne.to);
+  t("copie interne : répondre écrit au client", "jeanne@exemple.fr", interne.reply_to);
+  t("récapitulatif envoyé au client", ["jeanne@exemple.fr"], client.to);
+  t("le client ne voit jamais l'adresse interne", false, JSON.stringify(client).includes("contact@systemedrone.fr"));
+  t("le client répond à l'expéditeur", [undefined, undefined], [client.reply_to, client.bcc]);
+  t("prix recalculé, pas celui du client", true, res.json.total > 1 && client.text.includes("Total"));
+
+  process.env.DEVIS_DESTINATAIRE = "prive@gmail.com";
+  ({ envois } = await appeler(DEMANDE));
+  t("DEVIS_DESTINATAIRE respecté", ["prive@gmail.com"], envois[0].corps[0].to);
+  t("DEVIS_DESTINATAIRE absent de l'email client", false, JSON.stringify(envois[0].corps[1]).includes("prive@gmail.com"));
+  delete process.env.DEVIS_DESTINATAIRE;
 
   ({ res, envois } = await appeler({ ...DEMANDE, email: "" }));
-  t("sans email client → envoyé à SystèmeDrone", ["contact@systemedrone.fr"], envois[0].corps.to);
+  t("sans email client → seulement SystèmeDrone", [["contact@systemedrone.fr"]], envois[0].corps.map((e) => e.to));
 
   ({ res, envois } = await appeler({ ...DEMANDE, tel: "", email: "" }));
   t("demande invalide → 400, rien n'est envoyé", [400, 0], [res.statut, envois.length]);
