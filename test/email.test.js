@@ -67,23 +67,22 @@ const appeler = async (corps, { method = "POST", reponseResend = { ok: true } } 
   let { res, envois } = await appeler({ ...DEMANDE, total: 1 });
   t("envoi réussi → 200", 200, res.statut);
   t("un seul appel à Resend", 1, envois.length);
-  const [interne, client] = envois[0].corps;
-  t("deux emails : SystèmeDrone et le client", 2, envois[0].corps.length);
-  t("copie interne à SystèmeDrone", ["contact@systemedrone.fr"], interne.to);
-  t("copie interne : répondre écrit au client", "jeanne@exemple.fr", interne.reply_to);
-  t("récapitulatif envoyé au client", ["jeanne@exemple.fr"], client.to);
-  t("le client ne voit jamais l'adresse interne", false, JSON.stringify(client).includes("contact@systemedrone.fr"));
-  t("le client répond à l'expéditeur", [undefined, undefined], [client.reply_to, client.bcc]);
-  t("prix recalculé, pas celui du client", true, res.json.total > 1 && client.text.includes("Total"));
+  const mail = envois[0].corps;
+  t("un seul email, envoyé au client", ["jeanne@exemple.fr"], mail.to);
+  t("SystèmeDrone en copie cachée", ["contact@systemedrone.fr"], mail.bcc);
+  t("pas de reply_to : le client répond à l'expéditeur", undefined, mail.reply_to);
+  t("même sujet pour tous : un seul fil", false, mail.subject.startsWith("Nouvelle demande"));
+  t("prix recalculé, pas celui du client", true, res.json.total > 1 && mail.text.includes("Total"));
 
   process.env.DEVIS_DESTINATAIRE = "prive@gmail.com";
   ({ envois } = await appeler(DEMANDE));
-  t("DEVIS_DESTINATAIRE respecté", ["prive@gmail.com"], envois[0].corps[0].to);
-  t("DEVIS_DESTINATAIRE absent de l'email client", false, JSON.stringify(envois[0].corps[1]).includes("prive@gmail.com"));
+  t("DEVIS_DESTINATAIRE respecté, en copie cachée", ["prive@gmail.com"], envois[0].corps.bcc);
+  const visible = { ...envois[0].corps, bcc: undefined };
+  t("DEVIS_DESTINATAIRE absent de tout champ visible", false, JSON.stringify(visible).includes("prive@gmail.com"));
   delete process.env.DEVIS_DESTINATAIRE;
 
   ({ res, envois } = await appeler({ ...DEMANDE, email: "" }));
-  t("sans email client → seulement SystèmeDrone", [["contact@systemedrone.fr"]], envois[0].corps.map((e) => e.to));
+  t("sans email client → seulement SystèmeDrone", [["contact@systemedrone.fr"], undefined], [envois[0].corps.to, envois[0].corps.bcc]);
 
   ({ res, envois } = await appeler({ ...DEMANDE, tel: "", email: "" }));
   t("demande invalide → 400, rien n'est envoyé", [400, 0], [res.statut, envois.length]);

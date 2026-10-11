@@ -55,12 +55,18 @@ par [Resend](https://resend.com) un email récapitulant le devis — prestation,
 surfaces, détail du prix, total, version de la grille — et les coordonnées
 saisies :
 
-- SystèmeDrone reçoit toujours sa copie, à `DEVIS_DESTINATAIRE` ; « Répondre »
-  y écrit directement au client ;
-- si le client a laissé un email, il reçoit son récapitulatif dans un email
-  séparé, envoyé depuis `DEVIS_EXPEDITEUR` ; « Répondre » écrit à cette même
-  adresse. `DEVIS_DESTINATAIRE` n'apparaît jamais chez le client : elle peut
-  rester une adresse privée.
+- si le client a laissé un email, il reçoit le récapitulatif, envoyé depuis
+  `DEVIS_EXPEDITEUR`, avec SystèmeDrone en copie cachée (`DEVIS_DESTINATAIRE`,
+  qui n'apparaît jamais chez le client) ; sinon, l'email part à SystèmeDrone
+  seul ;
+- « Répondre » côté client écrit à `DEVIS_EXPEDITEUR`. Client et SystèmeDrone
+  ayant reçu le même message, les réponses se rangent dans un seul fil des
+  deux côtés ;
+- pour répondre au client depuis Gmail sous l'adresse `devis@`, ajouter
+  `DEVIS_EXPEDITEUR` dans Gmail → Comptes et importation → « Envoyer des
+  e-mails en tant que » (SMTP `smtp.resend.com`, port 465, utilisateur
+  `resend`, mot de passe : une clé API Resend). « Répondre » sur la copie
+  écrit alors directement au client.
 
 **À configurer une fois** dans Vercel → Settings → Environment Variables :
 

@@ -41,28 +41,27 @@ module.exports = async function handler(req, res) {
 
   const { sujet, texte, html } = construireEmail(demande, devis, calculateur.version);
 
-  // Deux emails distincts, pour que l'adresse de SystèmeDrone n'apparaisse
-  // jamais chez le client :
-  //  - SystèmeDrone reçoit sa copie, où « Répondre » écrit au client ;
-  //  - le client reçoit son récapitulatif (s'il a laissé un email) ; sans
-  //    reply_to, « Répondre » écrit à l'expéditeur, DEVIS_EXPEDITEUR.
-  const envois = [{
+  // Un seul email : le client le reçoit (s'il a laissé une adresse) et
+  // SystèmeDrone en copie cachée. Pas de reply_to, qui révélerait
+  // DEVIS_DESTINATAIRE : le client répond à l'expéditeur, DEVIS_EXPEDITEUR.
+  // Les deux côtés partagent ainsi le même message, donc le même fil : qui
+  // répond en premier, la réponse s'y range chez l'autre. Depuis Gmail
+  // configuré pour envoyer en tant que DEVIS_EXPEDITEUR, « Répondre » sur la
+  // copie écrit au destinataire d'origine, c'est-à-dire au client.
+  const envoi = {
     from: DEVIS_EXPEDITEUR,
-    to: [destinataire],
-    subject: "Nouvelle demande — " + sujet,
+    to: demande.email ? [demande.email] : [destinataire],
+    subject: sujet,
     text: texte,
     html,
-    ...(demande.email && { reply_to: demande.email }),
-  }];
-  if (demande.email) {
-    envois.push({ from: DEVIS_EXPEDITEUR, to: [demande.email], subject: sujet, text: texte, html });
-  }
+    ...(demande.email && { bcc: [destinataire] }),
+  };
 
   try {
-    const r = await fetch("https://api.resend.com/emails/batch", {
+    const r = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify(envois),
+      body: JSON.stringify(envoi),
     });
     if (!r.ok) {
       console.error("[devis] Resend a refusé l'envoi :", r.status, await r.text());
