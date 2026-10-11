@@ -188,21 +188,56 @@
     }
 
     // ── Soumission ────────────────────────────────────────────────────────
-    // TODO : définir ce qui se passe au clic sur « Demander mon devis »
-    // (envoi, page de confirmation…). `versionTarifs` accompagne la demande
-    // pour savoir plus tard sur quelle grille le devis a été établi.
-    $("devis").addEventListener("submit", (e) => {
+    // La demande part vers `/api/devis`, qui recalcule le prix et envoie le
+    // récapitulatif par email (au client s'il a laissé un email, et toujours à
+    // SystèmeDrone). `versionTarifs` est journalisé pour comparer avec la
+    // grille utilisée côté serveur.
+    let envoiEnCours = false;
+    $("devis").addEventListener("submit", async (e) => {
       e.preventDefault();
-      if (!valide()) return;
+      if (envoiEnCours || !valide()) return;
       const d = currentDevis();
-      console.debug("[SystèmeDrone] demande de devis", {
+      const demande = {
         prenom: val("prenom"), nom: val("nom"), adresse: val("adresse"),
         email: val("email"), tel: val("tel"),
         type: state.type, etage: state.etage, typeToit: libelleToit(),
-        surfaceToit: d.st, surfaceMur: d.sm, total: d.total,
-        versionTarifs,
-      });
+        surfaceToit: d.st, surfaceMur: d.sm,
+      };
+
+      envoiEnCours = true;
+      els.send.disabled = els.prev.disabled = true;
+      els.send.textContent = "Envoi en cours…";
+      try {
+        const r = await fetch("api/devis", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(demande),
+        });
+        const rep = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(rep.erreur || "HTTP " + r.status);
+        if (rep.versionTarifs && rep.versionTarifs !== versionTarifs) {
+          console.warn("[SystèmeDrone] grille du serveur différente :", rep.versionTarifs, "≠", versionTarifs);
+        }
+        confirmer(demande.email);
+      } catch (err) {
+        console.error("[SystèmeDrone] envoi du devis impossible :", err.message);
+        erreur("L'envoi a échoué. Réessayez, ou écrivez-nous à contact@systemedrone.fr.");
+      } finally {
+        envoiEnCours = false;
+        els.send.disabled = els.prev.disabled = false;
+        els.send.textContent = "Demander mon devis";
+      }
     });
+
+    // Remplace le formulaire par le message de confirmation.
+    function confirmer(email) {
+      $("confirmationTexte").textContent = email
+        ? `Le récapitulatif de votre devis a été envoyé à ${email}. Nous vous recontactons rapidement.`
+        : "Votre demande nous a bien été transmise. Nous vous recontactons rapidement par téléphone.";
+      $("devis").hidden = true;
+      $("confirmation").hidden = false;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
 
     function val(id) { return ($(id).value || "").trim(); }
 
